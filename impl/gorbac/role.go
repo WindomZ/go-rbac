@@ -9,11 +9,13 @@ type Roles map[string]IRole
 
 type Role struct {
 	_rbac.StdRole
+	permissions Permissions
 }
 
 func NewRole(id string) *Role {
 	return &Role{
-		StdRole: *_rbac.NewStdRole(id),
+		StdRole:     *_rbac.NewStdRole(id),
+		permissions: make(Permissions),
 	}
 }
 
@@ -24,39 +26,39 @@ func (role *Role) ID() string {
 
 // Assign a permission to the role.
 func (role *Role) Assign(p IPermission) error {
-	o, ok := p.Interface().(_rbac.Permission)
-	if !ok {
-		return false
-	}
-	return role.StdRole.Assign(o)
+	role.Lock()
+	defer role.Unlock()
+	role.permissions[p.ID()] = p
+	return nil
 }
 
 // Permit returns true if the role has specific permission.
 func (role *Role) Permit(p IPermission) bool {
-	o, ok := p.Interface().(_rbac.Permission)
-	if !ok {
-		return false
+	role.RLock()
+	defer role.RUnlock()
+	for _, rp := range role.permissions {
+		if rp.Match(p) {
+			return true
+		}
 	}
-	return role.StdRole.Permit(o)
+	return false
 }
 
 // Revoke the specific permission.
 func (role *Role) Revoke(p IPermission) error {
-	o, ok := p.Interface().(_rbac.Permission)
-	if !ok {
-		return false
-	}
-	return role.StdRole.Revoke(o)
+	role.Lock()
+	defer role.Unlock()
+	delete(role.permissions, p.ID())
+	return nil
 }
 
 // Permissions returns all permissions into a slice.
 func (role *Role) Permissions() []IPermission {
-	ps := role.StdRole.Permissions()
-	rs := make([]IPermission, 0, len(ps))
-	for _, p := range ps {
-		if r, ok := p.(IPermission); ok {
-			rs = append(rs, r)
-		}
+	role.RLock()
+	defer role.RUnlock()
+	result := make([]IPermission, 0, len(role.permissions))
+	for _, p := range role.permissions {
+		result = append(result, p)
 	}
-	return rs
+	return result
 }

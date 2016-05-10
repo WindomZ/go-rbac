@@ -28,10 +28,6 @@ func (p *Permission) Match(a IPermission) bool {
 	return p.StdPermission.ID() == a.ID()
 }
 
-func (p *Permission) Interface() interface{} {
-	return p.StdPermission
-}
-
 type LayerPermission struct {
 	_rbac.LayerPermission `json:""`
 }
@@ -58,8 +54,4 @@ func (p *LayerPermission) Match(a IPermission) bool {
 		return false
 	}
 	return p.LayerPermission.Match(&q.LayerPermission)
-}
-
-func (p *LayerPermission) Interface() interface{} {
-	return p.LayerPermission
 }

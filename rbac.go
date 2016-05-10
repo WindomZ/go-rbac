@@ -1,17 +1,17 @@
 package gorbac
 
-type AssertionFunc func(RBAC, string, Permission) bool
+type AssertionFunc func(IRBAC, string, IPermission) bool
 
-type RBAC interface {
+type IRBAC interface {
 	SetParents(string, []string) error
 	GetParents(string) ([]string, error)
 	SetParent(string, string) error
 	RemoveParent(string, string) error
 
-	AddRole(Role) error
+	AddRole(IRole) error
 	RemoveRole(string) error
-	GetRole(string) (Role, []string, error)
+	GetRole(string) (IRole, []string, error)
 
-	IsGranted(string, Permission) bool
-	IsAssertGranted(string, Permission, AssertionFunc) bool
+	IsGranted(string, IPermission) bool
+	IsAssertGranted(string, IPermission, AssertionFunc) bool
 }

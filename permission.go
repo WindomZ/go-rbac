@@ -1,6 +1,6 @@
 package gorbac
 
-type Permission interface {
+type IPermission interface {
 	ID() string
-	Match(Permission) bool
+	Match(IPermission) bool
 }

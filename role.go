@@ -1,9 +1,9 @@
 package gorbac
 
-type Role interface {
+type IRole interface {
 	ID() string
-	Assign(Permission) error
-	Revoke(Permission) error
-	Permit(Permission) bool
-	Permissions() []Permission
+	Assign(IPermission) error
+	Revoke(IPermission) error
+	Permit(IPermission) bool
+	Permissions() []IPermission
 }

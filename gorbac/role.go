@@ -2,26 +2,27 @@ package gorbac
 
 import (
 	. "github.com/WindomZ/go-rbac"
-	_rbac "github.com/mikespook/gorbac"
+	"sync"
 )
 
 type Roles map[string]IRole
 
 type Role struct {
-	_rbac.StdRole
+	sync.RWMutex
+	IDStr       string `json:"id"`
 	permissions Permissions
 }
 
 func NewRole(id string) *Role {
 	return &Role{
-		StdRole:     *_rbac.NewStdRole(id),
+		IDStr:       id,
 		permissions: make(Permissions),
 	}
 }
 
 // ID returns the role's identity name.
 func (role *Role) ID() string {
-	return role.StdRole.ID()
+	return role.IDStr
 }
 
 // Assign a permission to the role.

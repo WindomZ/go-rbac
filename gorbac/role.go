@@ -33,12 +33,28 @@ func (role *Role) Assign(p IPermission) error {
 	return nil
 }
 
+// Assign a permission id to the role.
+func (role *Role) AssignID(id string) error {
+	if len(id) == 0 {
+		return nil
+	}
+	return role.Assign(NewPermission(id))
+}
+
 // Permit returns true if the role has specific permission.
 func (role *Role) Permit(p IPermission) bool {
+	return role.PermitID(p.ID())
+}
+
+// Permit returns true if the role has specific permission id.
+func (role *Role) PermitID(id string) bool {
+	if len(id) == 0 {
+		return false
+	}
 	role.RLock()
 	defer role.RUnlock()
 	for _, rp := range role.permissions {
-		if rp.Match(p) {
+		if rp.MatchID(id) {
 			return true
 		}
 	}
@@ -47,9 +63,17 @@ func (role *Role) Permit(p IPermission) bool {
 
 // Revoke the specific permission.
 func (role *Role) Revoke(p IPermission) error {
+	return role.RevokeID(p.ID())
+}
+
+// Revoke the specific permission.
+func (role *Role) RevokeID(id string) error {
+	if len(id) == 0 {
+		return nil
+	}
 	role.Lock()
 	defer role.Unlock()
-	delete(role.permissions, p.ID())
+	delete(role.permissions, id)
 	return nil
 }
 
@@ -60,6 +84,17 @@ func (role *Role) Permissions() []IPermission {
 	result := make([]IPermission, 0, len(role.permissions))
 	for _, p := range role.permissions {
 		result = append(result, p)
+	}
+	return result
+}
+
+// Permissions returns all permission ids into a slice.
+func (role *Role) PermissionIDs() []string {
+	role.RLock()
+	defer role.RUnlock()
+	result := make([]string, 0, len(role.permissions))
+	for _, p := range role.permissions {
+		result = append(result, p.ID())
 	}
 	return result
 }

@@ -23,5 +23,10 @@ func (p *Permission) ID() string {
 
 // Match another permission
 func (p *Permission) Match(a IPermission) bool {
-	return p.ID() == a.ID()
+	return p.MatchID(a.ID())
+}
+
+// Match another permission with id
+func (p *Permission) MatchID(id string) bool {
+	return p.ID() == id
 }

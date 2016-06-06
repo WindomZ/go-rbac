@@ -27,6 +27,9 @@ func (role *Role) ID() string {
 
 // Assign a permission to the role.
 func (role *Role) Assign(p IPermission) error {
+	if p == nil || len(p.ID()) == 0 {
+		return ErrPermissionNoID
+	}
 	role.Lock()
 	defer role.Unlock()
 	role.permissions[p.ID()] = p
@@ -36,9 +39,23 @@ func (role *Role) Assign(p IPermission) error {
 // Assign a permission id to the role.
 func (role *Role) AssignID(id string) error {
 	if len(id) == 0 {
-		return nil
+		return ErrPermissionNoID
 	}
 	return role.Assign(NewPermission(id))
+}
+
+// Assign some permissions id to the role with the condition `assert`.
+func (role *Role) AssertAssignIDs(ids []string, assert AssertionAssignFunc) {
+	if ids == nil || len(ids) == 0 {
+		return
+	}
+	for _, id := range ids {
+		p := NewPermission(id)
+		if assert != nil && !assert(p) {
+			continue
+		}
+		role.Assign(p)
+	}
 }
 
 // Permit returns true if the role has specific permission.

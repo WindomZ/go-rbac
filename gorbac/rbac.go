@@ -153,6 +153,17 @@ func (rbac *RBAC) GetRole(id string) (IRole, []string, error) {
 	return r, parents, nil
 }
 
+// Get the role by `id`.
+func (rbac *RBAC) GetRoleOnly(id string) (IRole, error) {
+	rbac.mutex.RLock()
+	defer rbac.mutex.RUnlock()
+	r, ok := rbac.roles[id]
+	if !ok {
+		return nil, ErrRoleNotExist
+	}
+	return r, nil
+}
+
 // IsGranted tests if the role `id` has IPermission `p`.
 func (rbac *RBAC) IsGranted(id string, p IPermission) bool {
 	return rbac.IsAssertGranted(id, p, nil)
@@ -169,18 +180,37 @@ func (rbac *RBAC) isGranted(id string, p IPermission, assert AssertionFunc) bool
 	if assert != nil && !assert(rbac, id, p) {
 		return false
 	}
-	return rbac.recursionCheck(id, p)
+	return rbac.recursionCheckID(id, p.ID())
 }
 
-func (rbac *RBAC) recursionCheck(id string, p IPermission) bool {
+// IsGranted tests if the role `id` has Permission id `pid`.
+func (rbac *RBAC) IsGrantedID(id, pid string) bool {
+	return rbac.IsAssertGrantedID(id, pid, nil)
+}
+
+// IsAssertGranted tests if the role `id` has Permission id `pid` with the condition `assert`.
+func (rbac *RBAC) IsAssertGrantedID(id, pid string, assert AssertionIDFunc) bool {
+	rbac.mutex.RLock()
+	defer rbac.mutex.RUnlock()
+	return rbac.isGrantedID(id, pid, assert)
+}
+
+func (rbac *RBAC) isGrantedID(id, pid string, assert AssertionIDFunc) bool {
+	if assert != nil && !assert(rbac, id, pid) {
+		return false
+	}
+	return rbac.recursionCheckID(id, pid)
+}
+
+func (rbac *RBAC) recursionCheckID(id, pid string) bool {
 	if role, ok := rbac.roles[id]; ok {
-		if role.Permit(p) {
+		if role.PermitID(pid) {
 			return true
 		}
 		if parents, ok := rbac.parents[id]; ok {
 			for pID := range parents {
 				if _, ok := rbac.roles[pID]; ok {
-					if rbac.recursionCheck(pID, p) {
+					if rbac.recursionCheckID(pID, pid) {
 						return true
 					}
 				}

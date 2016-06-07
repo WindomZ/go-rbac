@@ -14,6 +14,7 @@ type Roles map[string]IRole
 type Role struct {
 	sync.RWMutex `json:"-"`
 	IDStr        string      `json:"id"`
+	TagStr       string      `json:"tag"`
 	permissions  Permissions `json:"-"`
 }
 
@@ -27,6 +28,11 @@ func NewRole(id string) *Role {
 // ID returns the role's identity name.
 func (role *Role) ID() string {
 	return role.IDStr
+}
+
+// Tag returns the role's tag.
+func (role *Role) Tag() string {
+	return role.TagStr
 }
 
 // Assign a permission to the role.

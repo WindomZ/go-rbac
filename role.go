@@ -4,6 +4,7 @@ type AssertionAssignFunc func(IPermission) bool
 
 type IRole interface {
 	ID() string
+	Tag() string
 
 	Assign(IPermission) error
 	AssignID(string) error

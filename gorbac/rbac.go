@@ -16,7 +16,7 @@ type RBAC struct {
 
 // New returns a RBAC structure.
 // The default role structure will be used.
-func New() *RBAC {
+func NewRBAC() *RBAC {
 	return &RBAC{
 		roles:       make(Roles),
 		permissions: make(Permissions),

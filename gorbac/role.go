@@ -1,16 +1,20 @@
 package gorbac
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	. "github.com/WindomZ/go-rbac"
+	"strings"
 	"sync"
 )
 
 type Roles map[string]IRole
 
 type Role struct {
-	sync.RWMutex
-	IDStr       string `json:"id"`
-	permissions Permissions
+	sync.RWMutex `json:"-"`
+	IDStr        string      `json:"id"`
+	permissions  Permissions `json:"-"`
 }
 
 func NewRole(id string) *Role {
@@ -114,4 +118,11 @@ func (role *Role) PermissionIDs() []string {
 		result = append(result, p.ID())
 	}
 	return result
+}
+
+// Sign returns unique signature by role and key
+func (role *Role) Sign(key string) string {
+	h := md5.New()
+	h.Write([]byte(fmt.Sprintf("%v#%v#%v", role.ID(), key, strings.Join(role.PermissionIDs(), ""))))
+	return hex.EncodeToString(h.Sum(nil))
 }

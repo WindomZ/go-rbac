@@ -17,4 +17,6 @@ type IRole interface {
 
 	Permissions() []IPermission
 	PermissionIDs() []string
+
+	Sign(string) string
 }

@@ -18,11 +18,15 @@ type Role struct {
 	permissions  Permissions `json:"-"`
 }
 
-func NewRole(id string) *Role {
-	return &Role{
+func NewRole(id string, tag ...string) *Role {
+	r := &Role{
 		IDStr:       id,
 		permissions: make(Permissions),
 	}
+	if tag != nil && len(tag) != 0 {
+		r.TagStr = tag[0]
+	}
+	return r
 }
 
 // ID returns the role's identity name.

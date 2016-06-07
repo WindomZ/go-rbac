@@ -1,6 +1,6 @@
 package gorbac
 
-type AssertionAssignFunc func(IPermission) bool
+type AssertionAssignFunc func(string) bool
 
 type IRole interface {
 	ID() string

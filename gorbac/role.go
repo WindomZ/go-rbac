@@ -65,7 +65,7 @@ func (role *Role) AssertAssignIDs(ids []string, assert AssertionAssignFunc) {
 	}
 	for _, id := range ids {
 		p := NewPermission(id)
-		if assert != nil && !assert(p) {
+		if assert != nil && !assert(p.ID()) {
 			continue
 		}
 		role.Assign(p)

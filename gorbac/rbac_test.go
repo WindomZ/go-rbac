@@ -31,8 +31,8 @@ func TestRbacPrepare(t *testing.T) {
 
 func TestRbacAdd(t *testing.T) {
 	assert(t, rbac.AddRole(rA))
-	if err := rbac.AddRole(rA); err != ErrRoleExist {
-		t.Error("A role can not be readded")
+	if err := rbac.AddRole(rA); err != nil {
+		t.Error("A role fail to readded")
 	}
 	assert(t, rbac.AddRole(rB))
 	assert(t, rbac.AddRole(rC))

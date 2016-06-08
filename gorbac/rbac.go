@@ -108,10 +108,9 @@ func (rbac *RBAC) RemoveParent(id string, parent string) error {
 func (rbac *RBAC) AddRole(r IRole) error {
 	rbac.mutex.Lock()
 	defer rbac.mutex.Unlock()
-	if _, ok := rbac.roles[r.ID()]; ok {
-		return ErrRoleExist
+	if r != nil {
+		rbac.roles[r.ID()] = r
 	}
-	rbac.roles[r.ID()] = r
 	return nil
 }
 

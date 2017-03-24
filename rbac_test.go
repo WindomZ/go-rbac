@@ -1,9 +1,6 @@
 package gorbac
 
-import (
-	. "github.com/WindomZ/go-rbac"
-	"testing"
-)
+import "testing"
 
 var (
 	rA = NewRole("role-a")

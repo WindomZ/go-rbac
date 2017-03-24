@@ -1,8 +1,6 @@
 package gorbac
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestRole(t *testing.T) {
 	rA := NewRole("role-a")

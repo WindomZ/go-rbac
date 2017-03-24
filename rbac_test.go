@@ -10,7 +10,7 @@ var (
 	rC = NewRole("role-c")
 	pC = NewPermission("permission-c")
 
-	rbac *RBAC
+	rbac *_RBAC
 )
 
 func assert(t *testing.T, err error) {
@@ -20,7 +20,7 @@ func assert(t *testing.T, err error) {
 }
 
 func TestRBACPrepare(t *testing.T) {
-	rbac = NewRBAC()
+	rbac = NewRBAC().(*_RBAC)
 	assert(t, rA.Assign(pA))
 	assert(t, rB.Assign(pB))
 	assert(t, rC.Assign(pC))
@@ -113,7 +113,7 @@ func TestRBACPermission(t *testing.T) {
 	if !rbac.IsGranted("role-c", pC) {
 		t.Fatalf("role-c should have %s", pC)
 	}
-	if rbac.IsAssertGranted("role-c", pC, func(IRBAC, string, IPermission) bool { return false }) {
+	if rbac.IsAssertGranted("role-c", pC, func(RBAC, string, Permission) bool { return false }) {
 		t.Fatal("Assertion don't work")
 	}
 	if !rbac.IsGranted("role-c", pB) {
@@ -127,7 +127,7 @@ func TestRBACPermission(t *testing.T) {
 }
 
 func BenchmarkRBACGranted(b *testing.B) {
-	rbac = NewRBAC()
+	rbac = NewRBAC().(*_RBAC)
 	rA.Assign(pA)
 	rB.Assign(pB)
 	rC.Assign(pC)
@@ -140,7 +140,7 @@ func BenchmarkRBACGranted(b *testing.B) {
 }
 
 func BenchmarkRBACNotGranted(b *testing.B) {
-	rbac = NewRBAC()
+	rbac = NewRBAC().(*_RBAC)
 	rA.Assign(pA)
 	rB.Assign(pB)
 	rC.Assign(pC)

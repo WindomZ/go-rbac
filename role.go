@@ -8,38 +8,25 @@ import (
 	"sync"
 )
 
-type Roles map[string]IRole
-
-type Role struct {
+type _Role struct {
 	sync.RWMutex `json:"-"`
 	IDStr        string      `json:"id"`
 	TagStr       string      `json:"tag"`
 	permissions  Permissions `json:"-"`
 }
 
-func NewRole(id string, tag ...string) *Role {
-	r := &Role{
-		IDStr:       id,
-		permissions: make(Permissions),
-	}
-	if tag != nil && len(tag) != 0 {
-		r.TagStr = tag[0]
-	}
-	return r
-}
-
 // ID returns the role's identity name.
-func (role *Role) ID() string {
+func (role *_Role) ID() string {
 	return role.IDStr
 }
 
 // Tag returns the role's tag.
-func (role *Role) Tag() string {
+func (role *_Role) Tag() string {
 	return role.TagStr
 }
 
 // Assign a permission to the role.
-func (role *Role) Assign(p IPermission) error {
+func (role *_Role) Assign(p Permission) error {
 	if p == nil || len(p.ID()) == 0 {
 		return ErrPermissionNoID
 	}
@@ -50,7 +37,7 @@ func (role *Role) Assign(p IPermission) error {
 }
 
 // Assign a permission id to the role.
-func (role *Role) AssignID(id string) error {
+func (role *_Role) AssignID(id string) error {
 	if len(id) == 0 {
 		return ErrPermissionNoID
 	}
@@ -58,7 +45,7 @@ func (role *Role) AssignID(id string) error {
 }
 
 // Assign some permissions id to the role with the condition `assert`.
-func (role *Role) AssertAssignIDs(ids []string, assert AssertionAssignFunc) {
+func (role *_Role) AssertAssignIDs(ids []string, assert AssertionAssignFunc) {
 	if ids == nil || len(ids) == 0 {
 		return
 	}
@@ -72,12 +59,12 @@ func (role *Role) AssertAssignIDs(ids []string, assert AssertionAssignFunc) {
 }
 
 // Permit returns true if the role has specific permission.
-func (role *Role) Permit(p IPermission) bool {
+func (role *_Role) Permit(p Permission) bool {
 	return role.PermitID(p.ID())
 }
 
 // Permit returns true if the role has specific permission id.
-func (role *Role) PermitID(id string) bool {
+func (role *_Role) PermitID(id string) bool {
 	if len(id) == 0 {
 		return false
 	}
@@ -92,12 +79,12 @@ func (role *Role) PermitID(id string) bool {
 }
 
 // Revoke the specific permission.
-func (role *Role) Revoke(p IPermission) error {
+func (role *_Role) Revoke(p Permission) error {
 	return role.RevokeID(p.ID())
 }
 
 // Revoke the specific permission.
-func (role *Role) RevokeID(id string) error {
+func (role *_Role) RevokeID(id string) error {
 	if len(id) == 0 {
 		return nil
 	}
@@ -108,10 +95,10 @@ func (role *Role) RevokeID(id string) error {
 }
 
 // Permissions returns all permissions into a slice.
-func (role *Role) Permissions() []IPermission {
+func (role *_Role) Permissions() []Permission {
 	role.RLock()
 	defer role.RUnlock()
-	result := make([]IPermission, 0, len(role.permissions))
+	result := make([]Permission, 0, len(role.permissions))
 	for _, p := range role.permissions {
 		result = append(result, p)
 	}
@@ -119,7 +106,7 @@ func (role *Role) Permissions() []IPermission {
 }
 
 // Permissions returns all permission ids into a slice.
-func (role *Role) PermissionIDs() []string {
+func (role *_Role) PermissionIDs() []string {
 	role.RLock()
 	defer role.RUnlock()
 	result := make([]string, 0, len(role.permissions))
@@ -130,7 +117,7 @@ func (role *Role) PermissionIDs() []string {
 }
 
 // Sign returns unique signature by role and key
-func (role *Role) Sign(key string) string {
+func (role *_Role) Sign(key string) string {
 	h := md5.New()
 	h.Write([]byte(fmt.Sprintf("%v#%v#%v", role.ID(), key, strings.Join(role.PermissionIDs(), ""))))
 	return hex.EncodeToString(h.Sum(nil))

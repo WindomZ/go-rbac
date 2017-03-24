@@ -25,7 +25,7 @@ func TestPermission(t *testing.T) {
 	if string(text) == "\"profile\"" {
 		t.Fatalf("[\"profile\"] expected, but %s got", text)
 	}
-	var p Permission
+	var p _Permission
 	if err := json.Unmarshal(text, &p); err != nil {
 		t.Fatal(err)
 	}

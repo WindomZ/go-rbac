@@ -22,14 +22,14 @@ func assert(t *testing.T, err error) {
 	}
 }
 
-func TestRbacPrepare(t *testing.T) {
+func TestRBACPrepare(t *testing.T) {
 	rbac = NewRBAC()
 	assert(t, rA.Assign(pA))
 	assert(t, rB.Assign(pB))
 	assert(t, rC.Assign(pC))
 }
 
-func TestRbacAdd(t *testing.T) {
+func TestRBACAdd(t *testing.T) {
 	assert(t, rbac.AddRole(rA))
 	if err := rbac.AddRole(rA); err != nil {
 		t.Error("A role fail to readded")
@@ -38,7 +38,7 @@ func TestRbacAdd(t *testing.T) {
 	assert(t, rbac.AddRole(rC))
 }
 
-func TestRbacGetRemove(t *testing.T) {
+func TestRBACGetRemove(t *testing.T) {
 	assert(t, rbac.SetParent("role-c", "role-a"))
 	assert(t, rbac.SetParent("role-a", "role-b"))
 	if r, parents, err := rbac.GetRole("role-a"); err != nil {
@@ -64,7 +64,7 @@ func TestRbacGetRemove(t *testing.T) {
 	}
 }
 
-func TestRbacParents(t *testing.T) {
+func TestRBACParents(t *testing.T) {
 	assert(t, rbac.SetParent("role-c", "role-b"))
 	if _, ok := rbac.parents["role-c"]["role-b"]; !ok {
 		t.Fatal("Parent binding failed")
@@ -112,7 +112,7 @@ func TestRbacParents(t *testing.T) {
 	}
 }
 
-func TestRbacPermission(t *testing.T) {
+func TestRBACPermission(t *testing.T) {
 	if !rbac.IsGranted("role-c", pC) {
 		t.Fatalf("role-c should have %s", pC)
 	}
@@ -129,7 +129,7 @@ func TestRbacPermission(t *testing.T) {
 	}
 }
 
-func BenchmarkRbacGranted(b *testing.B) {
+func BenchmarkRBACGranted(b *testing.B) {
 	rbac = NewRBAC()
 	rA.Assign(pA)
 	rB.Assign(pB)
@@ -142,7 +142,7 @@ func BenchmarkRbacGranted(b *testing.B) {
 	}
 }
 
-func BenchmarkRbacNotGranted(b *testing.B) {
+func BenchmarkRBACNotGranted(b *testing.B) {
 	rbac = NewRBAC()
 	rA.Assign(pA)
 	rB.Assign(pB)

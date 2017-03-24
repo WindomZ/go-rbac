@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/WindomZ/go-rbac.svg?branch=master)](https://travis-ci.org/WindomZ/go-rbac)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-a simplified role-based access control (RBAC) implementation, 
+A simplified role-based access control (RBAC) implementation, 
 inspired by [gorbac](https://github.com/mikespook/gorbac)
 
 ![v0.5.0](https://img.shields.io/badge/version-v0.5.0-yellow.svg)
@@ -21,7 +21,7 @@ The exported functions could *change* at any time before the first *stable relea
 
 - [x] An `identity` has one or more `roles`.
 - [x] A `role` has one or more `permissions`.
-- [x] A `role` can inherit one or more other `role`(inheriting their `permissions`).
+- [x] A `role` can inherit one or more other `roles`(inheriting their `permissions`).
 - [x] Both `identity`, `role`, `permission` are defined by ID string.
 - [x] Pure no third party library dependent.
 

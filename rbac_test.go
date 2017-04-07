@@ -1,6 +1,9 @@
 package gorbac
 
-import "testing"
+import (
+	"github.com/WindomZ/testify/assert"
+	"testing"
+)
 
 var (
 	rA = NewRole("role-a")
@@ -13,31 +16,25 @@ var (
 	rbac *_RBAC
 )
 
-func assert(t *testing.T, err error) {
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
 func TestRBACPrepare(t *testing.T) {
 	rbac = NewRBAC().(*_RBAC)
-	assert(t, rA.Assign(pA))
-	assert(t, rB.Assign(pB))
-	assert(t, rC.Assign(pC))
+	assert.NoError(t, rA.Assign(pA))
+	assert.NoError(t, rB.Assign(pB))
+	assert.NoError(t, rC.Assign(pC))
 }
 
 func TestRBACAdd(t *testing.T) {
-	assert(t, rbac.AddRole(rA))
+	assert.NoError(t, rbac.AddRole(rA))
 	if err := rbac.AddRole(rA); err != nil {
 		t.Error("A role fail to readded")
 	}
-	assert(t, rbac.AddRole(rB))
-	assert(t, rbac.AddRole(rC))
+	assert.NoError(t, rbac.AddRole(rB))
+	assert.NoError(t, rbac.AddRole(rC))
 }
 
 func TestRBACGetRemove(t *testing.T) {
-	assert(t, rbac.SetParent("role-c", "role-a"))
-	assert(t, rbac.SetParent("role-a", "role-b"))
+	assert.NoError(t, rbac.SetParent("role-c", "role-a"))
+	assert.NoError(t, rbac.SetParent("role-a", "role-b"))
 	if r, parents, err := rbac.GetRole("role-a"); err != nil {
 		t.Fatal(err)
 	} else if r.ID() != "role-a" {
@@ -45,7 +42,7 @@ func TestRBACGetRemove(t *testing.T) {
 	} else if len(parents) != 1 {
 		t.Fatal("[role-a] should have one parent")
 	}
-	assert(t, rbac.RemoveRole("role-a"))
+	assert.NoError(t, rbac.RemoveRole("role-a"))
 	if _, ok := rbac.roles["role-a"]; ok {
 		t.Fatal("Role removing failed")
 	}
@@ -62,11 +59,11 @@ func TestRBACGetRemove(t *testing.T) {
 }
 
 func TestRBACParents(t *testing.T) {
-	assert(t, rbac.SetParent("role-c", "role-b"))
+	assert.NoError(t, rbac.SetParent("role-c", "role-b"))
 	if _, ok := rbac.parents["role-c"]["role-b"]; !ok {
 		t.Fatal("Parent binding failed")
 	}
-	assert(t, rbac.RemoveParent("role-c", "role-b"))
+	assert.NoError(t, rbac.RemoveParent("role-c", "role-b"))
 	if _, ok := rbac.parents["role-c"]["role-b"]; ok {
 		t.Fatal("Parent unbinding failed")
 	}
@@ -88,7 +85,7 @@ func TestRBACParents(t *testing.T) {
 	if err := rbac.SetParents("role-c", []string{"role-a"}); err != ErrRoleNotExist {
 		t.Fatalf("%s needed", ErrRoleNotExist)
 	}
-	assert(t, rbac.SetParents("role-c", []string{"role-b"}))
+	assert.NoError(t, rbac.SetParents("role-c", []string{"role-b"}))
 	if _, ok := rbac.parents["role-c"]["role-b"]; !ok {
 		t.Fatal("Parent binding failed")
 	}
@@ -120,7 +117,7 @@ func TestRBACPermission(t *testing.T) {
 		t.Fatalf("role-c should have %s which inherits from role-b", pB)
 	}
 
-	assert(t, rbac.RemoveParent("role-c", "role-b"))
+	assert.NoError(t, rbac.RemoveParent("role-c", "role-b"))
 	if rbac.IsGranted("role-c", pB) {
 		t.Fatalf("role-c should not have %s because of the unbinding with role-b", pB)
 	}

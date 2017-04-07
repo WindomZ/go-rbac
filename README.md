@@ -1,6 +1,7 @@
 # go-rbac
 [![Build Status](https://travis-ci.org/WindomZ/go-rbac.svg?branch=master)](https://travis-ci.org/WindomZ/go-rbac)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Coverage Status](https://coveralls.io/repos/github/WindomZ/go-rbac/badge.svg?branch=dev)](https://coveralls.io/github/WindomZ/go-rbac?branch=dev)
 
 A simplified role-based access control (RBAC) implementation, 
 inspired by [gorbac](https://github.com/mikespook/gorbac)

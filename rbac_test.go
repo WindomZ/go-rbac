@@ -18,6 +18,7 @@ var (
 
 func TestRBACPrepare(t *testing.T) {
 	rbac = NewRBAC().(*_RBAC)
+
 	assert.NoError(t, rA.Assign(pA))
 	assert.NoError(t, rB.Assign(pB))
 	assert.NoError(t, rC.Assign(pC))
@@ -35,6 +36,7 @@ func TestRBACAdd(t *testing.T) {
 func TestRBACGetRemove(t *testing.T) {
 	assert.NoError(t, rbac.SetParent("role-c", "role-a"))
 	assert.NoError(t, rbac.SetParent("role-a", "role-b"))
+
 	if r, parents, err := rbac.GetRole("role-a"); err != nil {
 		t.Fatal(err)
 	} else if r.ID() != "role-a" {
@@ -42,19 +44,34 @@ func TestRBACGetRemove(t *testing.T) {
 	} else if len(parents) != 1 {
 		t.Fatal("[role-a] should have one parent")
 	}
+
+	if r, err := rbac.GetRoleOnly("role-a"); err != nil {
+		t.Fatal(err)
+	} else if r.ID() != "role-a" {
+		t.Fatalf("[role-a] does not match %s", r.ID())
+	}
+
 	assert.NoError(t, rbac.RemoveRole("role-a"))
 	if _, ok := rbac.roles["role-a"]; ok {
 		t.Fatal("Role removing failed")
 	}
+
 	if err := rbac.RemoveRole("not-exist"); err != ErrRoleNotExist {
 		t.Fatalf("%s needed", ErrRoleNotExist)
 	}
+
 	if r, parents, err := rbac.GetRole("role-a"); err != ErrRoleNotExist {
 		t.Fatalf("%s needed", ErrRoleNotExist)
 	} else if r != nil {
 		t.Fatal("The instance of role should be a nil")
 	} else if parents != nil {
 		t.Fatal("The slice of parents should be a nil")
+	}
+
+	if r, err := rbac.GetRoleOnly("role-a"); err != ErrRoleNotExist {
+		t.Fatalf("%s needed", ErrRoleNotExist)
+	} else if r != nil {
+		t.Fatal("The instance of role should be a nil")
 	}
 }
 
@@ -107,18 +124,19 @@ func TestRBACParents(t *testing.T) {
 }
 
 func TestRBACPermission(t *testing.T) {
-	if !rbac.IsGranted("role-c", pC) {
+	if !rbac.IsGranted("role-c", pC) || !rbac.IsGrantedID("role-c", pC.ID()) {
 		t.Fatalf("role-c should have %s", pC)
 	}
-	if rbac.IsAssertGranted("role-c", pC, func(RBAC, string, Permission) bool { return false }) {
+	if rbac.IsAssertGranted("role-c", pC, func(RBAC, string, Permission) bool { return false }) &&
+		rbac.IsAssertGrantedID("role-c", pC.ID(), func(RBAC, string, string) bool { return false }) {
 		t.Fatal("Assertion don't work")
 	}
-	if !rbac.IsGranted("role-c", pB) {
+	if !rbac.IsGranted("role-c", pB) || !rbac.IsGrantedID("role-c", pB.ID()) {
 		t.Fatalf("role-c should have %s which inherits from role-b", pB)
 	}
 
 	assert.NoError(t, rbac.RemoveParent("role-c", "role-b"))
-	if rbac.IsGranted("role-c", pB) {
+	if rbac.IsGranted("role-c", pB) && rbac.IsGrantedID("role-c", pB.ID()) {
 		t.Fatalf("role-c should not have %s because of the unbinding with role-b", pB)
 	}
 }

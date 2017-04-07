@@ -30,7 +30,7 @@ func NewRole(id string, tag ...string) Role {
 		IDStr:       id,
 		permissions: make(Permissions),
 	}
-	if tag != nil && len(tag) != 0 {
+	if len(tag) != 0 {
 		r.TagStr = tag[0]
 	}
 	return r

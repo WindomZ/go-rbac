@@ -22,7 +22,7 @@ inspired by [gorbac](https://github.com/mikespook/gorbac)
 - [x] A `role` has one or more `permissions`.
 - [x] A `role` can inherit one or more other `roles`(inheriting their `permissions`).
 - [x] Both `identity`, `role`, `permission` are defined by ID string.
-- [x] Pure no third party library dependent.
+- [x] Native and no third party library dependent, except unit testing
 
 ## Installation
 
